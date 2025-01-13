@@ -56,7 +56,11 @@ namespace PythonNetStubGenerator
             while (true)
             {
                 var (nameSpace, types) = PythonTypes.RemoveDirtyNamespace();
-                if (nameSpace == null) break;
+
+                Console.WriteLine($"Handling namespace {nameSpace}");
+
+                if (nameSpace == null) 
+                    break;
 
                 // generate stubs for each type
                 WriteStub(destPath, nameSpace, types);

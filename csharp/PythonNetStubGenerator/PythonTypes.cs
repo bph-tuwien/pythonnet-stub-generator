@@ -57,7 +57,10 @@ namespace PythonNetStubGenerator
         public static void AddDependency(Type t)
         {
             var isNewAdd = AllExportedTypes.Add(t);
-            if (isNewAdd) DirtyNamespaces.Add(t.Namespace);
+            if (isNewAdd)
+            {
+                DirtyNamespaces.Add(t.Namespace);
+            }
             if (t != typeof(Nullable<>)) CurrentTypes.Add(t);
         }
 
@@ -84,9 +87,17 @@ namespace PythonNetStubGenerator
 
         public static (string nameSpace, List<Type> types) RemoveDirtyNamespace()
         {
-            var key = DirtyNamespaces.FirstOrDefault();
-            DirtyNamespaces.Remove(key);
-            if (key == null) return (null, new List<Type>());
+            string key = null;
+
+            while (DirtyNamespaces.Count > 0 && key == null)
+            { 
+                key = DirtyNamespaces.FirstOrDefault();
+                DirtyNamespaces.Remove(key);
+            }
+
+            if (key == null) 
+                return (null, new List<Type>());
+
             var results = AllExportedTypes.Where(it => it.Namespace == key).ToList();
             return (key, results);
         }

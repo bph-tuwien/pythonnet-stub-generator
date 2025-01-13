@@ -2,7 +2,7 @@
   "profiles": {
     "PythonNetStubTool": {
       "commandName": "Project",
-      "commandLineArgs": "--dest-path=C:\\Repos\\Animo\\AnimoTrainer\\typings --search-paths=\"%userprofile%\\.nuget\\packages\" --target-dlls=\"C:\\Repos\\Animo\\AnimoUnity\\Assets\\DLLs\\AnimoSimulation.dll\",\"C:\\Repos\\Animo\\AnimoUnity\\Assets\\DLLs\\AnimoDatabase.dll\""
+      "commandLineArgs": "--dest-path=C:\\repos\\debug-data\\SIMULTAN-stubs --search-paths=\"%userprofile%\\.nuget\\packages\" --target-dlls=\"C:\\repos\\SIMULTAN.ComponentBuilder2\\Source\\SIMULTAN\\SIMULTAN\\bin\\Debug\\SIMULTAN.dll\""
     }
   }
 }
