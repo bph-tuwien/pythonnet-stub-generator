@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -189,7 +190,7 @@ namespace PythonNetStubGenerator
             {
                 var args = type.GetGenericArguments().Skip(externalGenerics.Count).ToArray();
 
-                var targetType = type.ToPythonType(false);
+                var targetType = type.ToPythonType(null, false);
 
                 var prefix = "Generic_";
 
@@ -252,10 +253,10 @@ namespace PythonNetStubGenerator
                 var wroteMember = false;
 
                 wroteMember |= WriteConstructors(type, sb);
+                wroteMember |= WriteNestedTypes(sb, type);
                 wroteMember |= WriteFields(type, sb);
                 wroteMember |= WriteProperties(type, sb);
                 wroteMember |= WriteMethods(type, sb);
-                wroteMember |= WriteNestedTypes(sb, type);
                 wroteMember |= WriteIndexers(sb, type);
 
                 if (!wroteMember) sb.Indent().AppendLine("pass");
@@ -316,10 +317,10 @@ namespace PythonNetStubGenerator
             foreach (var group in depsByNamespace)
             {
                 if (group.Key == nameSpace) continue;
-                var types = group.Select(it => it.GetRootType().ToPythonType(false)).Distinct().ToList();
+                var types = group.Select(it => it.GetRootType().ToPythonType(null, false)).Distinct().ToList();
 
                 var arrayType = typeof(Array);
-                var arrayTypeStr = arrayType.ToPythonType(false);
+                var arrayTypeStr = arrayType.ToPythonType(null, false);
                 if (group.Key == arrayType.Namespace && types.Contains(arrayTypeStr))
                 {
                     var index = types.IndexOf(arrayTypeStr);
@@ -559,7 +560,11 @@ namespace PythonNetStubGenerator
 
                 if (isStatic) sb.Indent().AppendLine("@classmethod");
                 sb.Indent().AppendLine("@property");
-                var propType = property.PropertyType.ToPythonType();
+
+                if (property.Name == "Components" && stubType.Name == "SimComponent")
+                    Debug.WriteLine("asdf");
+
+                var propType = property.PropertyType.ToPythonType(stubType);
                 var getterType = property.CanRead ? propType : "None";
                 sb.Indent().AppendLine($"def {property.Name}({firstParam}) -> {getterType}: ...");
 

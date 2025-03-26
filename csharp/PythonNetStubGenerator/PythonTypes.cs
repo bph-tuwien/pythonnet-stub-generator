@@ -133,7 +133,7 @@ namespace PythonNetStubGenerator
         }
 
 
-        public static string ToPythonType(this Type t, bool withGenericParams = true)
+        public static string ToPythonType(this Type t, Type currentScope = null, bool withGenericParams = true)
         {
             if (t == null || t == typeof(void)) return "None";
             if (t == typeof(object)) return "typing.Any";
@@ -159,12 +159,12 @@ namespace PythonNetStubGenerator
             }
 
             if (t.IsByRef || t.IsPointer)
-                return !withGenericParams ? "clr.Reference" : $"clr.Reference[{t.GetElementType().ToPythonType()}]";
+                return !withGenericParams ? "clr.Reference" : $"clr.Reference[{t.GetElementType().ToPythonType(currentScope)}]";
 
             if (t.IsArray)
             {
                 AddArrayDependency(true);
-                return !withGenericParams ? "Array_1" : $"Array_1[{t.GetElementType().ToPythonType()}]";
+                return !withGenericParams ? "Array_1" : $"Array_1[{t.GetElementType().ToPythonType(currentScope)}]";
             }
 
             if (t.IsGenericParameter)
@@ -193,7 +193,7 @@ namespace PythonNetStubGenerator
                 }
             }
 
-            var scope = GetScope(t);
+            var scope = GetScope(t, currentScope);
 
             if (string.IsNullOrEmpty(scope))
             {
@@ -203,9 +203,12 @@ namespace PythonNetStubGenerator
             return scope + cleanName;
         }
 
-        private static string GetScope(Type type)
+        private static string GetScope(Type type, Type currentScope = null)
         {
-            var s = type.DeclaringType?.ToPythonType(false);
+            if (type.DeclaringType == currentScope)
+                return "";
+
+            var s = type.DeclaringType?.ToPythonType(currentScope, false);
             if (s != null) return $"{s}.";
 
             var cleanName = type.CleanName();
